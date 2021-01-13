@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
             - name: hqs-privilege-service
-              image: gcr.io/softcorp-hqs/hqs-privilege-service:v0.0.2
+              image: gcr.io/softcorp-hqs/hqs-privilege-service:v0.0.3
               imagePullPolicy: Always
               ports:
                 - containerPort: 9000
@@ -26,7 +26,7 @@ spec:
                 value: "privileges"
               - name: "USER_SERVICE_IP"
                 value: "hqs-user-service.default.svc.cluster.local"
-              - name: "USER_SERVICE_IP"
+              - name: "USER_SERVICE_PORT"
                 value: "9000"
               - name: "SERVICE_PORT"
                 value: "9000"
