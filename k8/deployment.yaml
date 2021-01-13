@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: hqs-privilege-service
+spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: hqs-privilege-service
+    template:
+        metadata:
+          name: hqs-privilege-service
+          labels:
+            app: hqs-privilege-service
+        spec:
+          containers:
+            - name: hqs-privilege-service
+              image: gcr.io/softcorp-hqs/hqs-privilege-service:v0.0.1
+              imagePullPolicy: Always
+              ports:
+                - containerPort: 9000
+              env: 
+              - name: "MONGO_DBNAME"
+                value: "hqs_user_test"
+              - name: "MONGO_DB_PRIVILEGE_COLLECTION"
+                value: "privileges"
+              - name: "USER_SERVICE_IP"
+                value: "hqs-user-service.default.svc.cluster.local"
+              - name: "USER_SERVICE_IP"
+                value: "9000"
+              - name: "SERVICE_PORT"
+                value: "9000"
+              envFrom:
+              - secretRef:
+                  name: hqs-privilege-service-secret
