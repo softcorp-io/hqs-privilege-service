@@ -71,12 +71,12 @@ func Run(zapLog *zap.Logger, wg *sync.WaitGroup) {
 	if err := repo.CreateDefault(context.Background()); err != nil {
 		zapLog.Info(fmt.Sprintf("%v", err))
 	} else {
-		zapLog.Info("Created default certificate!")
+		zapLog.Info("Created default privilege!")
 	}
 	if err := repo.CreateRoot(context.Background()); err != nil {
 		zapLog.Info(fmt.Sprintf("%v", err))
 	} else {
-		zapLog.Info("Created root certificate!")
+		zapLog.Info("Created root privilege!")
 	}
 
 	// setup user client
