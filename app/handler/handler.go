@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"strings"
 
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
 	repository "github.com/softcorp-io/hqs-privileges-service/repository"
@@ -17,13 +19,12 @@ import (
 // Handler - struct used through program and passed to go-micro.
 type Handler struct {
 	repository repository.Repository
-	userClient userProto.UserServiceClient
 	zapLog     *zap.Logger
 }
 
 // NewHandler returns a Handler object
-func NewHandler(repo repository.Repository, userClient userProto.UserServiceClient, zapLog *zap.Logger) *Handler {
-	return &Handler{repo, userClient, zapLog}
+func NewHandler(repo repository.Repository, zapLog *zap.Logger) *Handler {
+	return &Handler{repo, zapLog}
 }
 
 // Ping - used for other service to check if live
@@ -78,12 +79,6 @@ func (s *Handler) Get(ctx context.Context, req *privilegeProto.Privilege) (*priv
 
 // GetRoot - gets a root privilege
 func (s *Handler) GetRoot(ctx context.Context, req *privilegeProto.Request) (*privilegeProto.Response, error) {
-	s.zapLog.Info("Recieved new request")
-	if err := s.validateTokenHelper(ctx); err != nil {
-		s.zapLog.Error(fmt.Sprintf("Could not validate user with err %v", err))
-		return &privilegeProto.Response{}, err
-	}
-
 	privilege, err := s.repository.GetRoot(ctx)
 	if err != nil {
 		s.zapLog.Error(fmt.Sprintf("Could not get root privilege with err %v", err))
@@ -98,12 +93,6 @@ func (s *Handler) GetRoot(ctx context.Context, req *privilegeProto.Request) (*pr
 
 // GetDefault - gets a default privilege
 func (s *Handler) GetDefault(ctx context.Context, req *privilegeProto.Request) (*privilegeProto.Response, error) {
-	s.zapLog.Info("Recieved new request")
-	if err := s.validateTokenHelper(ctx); err != nil {
-		s.zapLog.Error(fmt.Sprintf("Could not validate user with err %v", err))
-		return &privilegeProto.Response{}, err
-	}
-
 	privilege, err := s.repository.GetDefault(ctx)
 	if err != nil {
 		s.zapLog.Error(fmt.Sprintf("Could not get default privilege with err %v", err))
@@ -118,12 +107,6 @@ func (s *Handler) GetDefault(ctx context.Context, req *privilegeProto.Request) (
 
 // GetAll - get all privileges
 func (s *Handler) GetAll(ctx context.Context, req *privilegeProto.Request) (*privilegeProto.Response, error) {
-	s.zapLog.Info("Recieved new request")
-	if err := s.validateTokenHelper(ctx); err != nil {
-		s.zapLog.Error(fmt.Sprintf("Could not validate user with err %v", err))
-		return &privilegeProto.Response{}, err
-	}
-
 	privileges, err := s.repository.GetAll(ctx)
 	if err != nil {
 		s.zapLog.Error(fmt.Sprintf("Could not get all privileges with err %v", err))
@@ -177,7 +160,34 @@ func (s *Handler) validateTokenHelper(ctx context.Context) error {
 		Token: token[0],
 	}
 
-	resultToken, err := s.userClient.ValidateToken(context.Background(), userToken)
+	// setup user client
+	ip, check := os.LookupEnv("USER_SERVICE_IP")
+	if !check {
+		s.zapLog.Error("Required USER_SERVICE_IP")
+		return errors.New("Required USER_SERVICE_IP")
+	}
+	port, check := os.LookupEnv("USER_SERVICE_PORT")
+	if !check {
+		s.zapLog.Error("Required USER_SERVICE_PORT")
+		return errors.New("Required USER_SERVICE_PORT")
+	}
+
+	conn, err := grpc.DialContext(context.Background(), ip+":"+port, grpc.WithInsecure())
+	if err != nil {
+		s.zapLog.Error(fmt.Sprintf("Could not dial user service with err %v", err))
+		return err
+	}
+	defer conn.Close()
+	userClient := userProto.NewUserServiceClient(conn)
+
+	_, err = userClient.Ping(context.Background(), &userProto.Request{})
+	if err != nil {
+		s.zapLog.Error(fmt.Sprintf("Could not ping user service with err %v", err))
+		return err
+	}
+
+	// validate token
+	resultToken, err := userClient.ValidateToken(context.Background(), userToken)
 	if err != nil {
 		return err
 	}

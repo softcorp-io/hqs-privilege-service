@@ -14,7 +14,6 @@ import (
 	handler "github.com/softcorp-io/hqs-privileges-service/handler"
 	repository "github.com/softcorp-io/hqs-privileges-service/repository"
 	privilegeProto "github.com/softcorp-io/hqs_proto/go_hqs/hqs_privilege_service"
-	userProto "github.com/softcorp-io/hqs_proto/go_hqs/hqs_user_service"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -79,28 +78,8 @@ func Run(zapLog *zap.Logger, wg *sync.WaitGroup) {
 		zapLog.Info("Created root privilege!")
 	}
 
-	// setup user client
-	userServiceIP, ok := os.LookupEnv("USER_SERVICE_IP")
-	if !ok {
-		zapLog.Fatal("Could not get user service ip")
-	}
-	userServicePort, ok := os.LookupEnv("USER_SERVICE_PORT")
-	if !ok {
-		zapLog.Fatal("Could not get user service port")
-	}
-	conn, err := grpc.DialContext(context.Background(), userServiceIP+":"+userServicePort, grpc.WithInsecure())
-	if err != nil {
-		zapLog.Error(fmt.Sprintf("Could not dial email service with err %v", err))
-	}
-	defer conn.Close()
-	userClient := userProto.NewUserServiceClient(conn)
-	_, err = userClient.Ping(context.Background(), &userProto.Request{})
-	if err != nil {
-		zapLog.Error(fmt.Sprintf("Could not ping user service with err %v", err))
-	}
-
 	// use above to create handler
-	handle := handler.NewHandler(repo, userClient, zapLog)
+	handle := handler.NewHandler(repo, zapLog)
 
 	// create the service and run the service
 	port, ok := os.LookupEnv("SERVICE_PORT")
