@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
             - name: hqs-privilege-service
-              image: gcr.io/softcorp-hqs/hqs-privilege-service:v0.0.5
+              image: gcr.io/softcorp-hqs/hqs-privilege-service:v0.0.6
               imagePullPolicy: Always
               ports:
                 - containerPort: 9000

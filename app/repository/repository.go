@@ -131,6 +131,9 @@ func (p *Privilege) validate(action string) error {
 			return errors.New("Send reset email access not allowed without view access")
 		}
 	case "update":
+		if p.Default || p.Root {
+			return errors.New("Cannot update root privilege")
+		}
 		createNoViewAccess := p.CreateUser && !p.ViewAllUsers
 		deleteNoViewAccess := p.DeleteUser && !p.ViewAllUsers
 		managePrivilegesNoViewAccess := p.ManagePrivileges && !p.ViewAllUsers
@@ -150,6 +153,10 @@ func (p *Privilege) validate(action string) error {
 		}
 		if sendResetEmailNoViewAccess {
 			return errors.New("Send reset email access not allowed without view access")
+		}
+	case "delete":
+		if p.Default || p.Root {
+			return errors.New("Cannot delete root privilege")
 		}
 	default:
 		return errors.New("Unknown action")
@@ -247,10 +254,6 @@ func (r *MongoRepository) CreateRoot(ctx context.Context) error {
 
 // Update - updates existing privilege by id
 func (r *MongoRepository) Update(ctx context.Context, priv *Privilege) error {
-	if priv.Default {
-		return errors.New("Cannot update root privilege")
-	}
-
 	priv.prepare("update")
 
 	if err := priv.validate("update"); err != nil {
@@ -334,8 +337,8 @@ func (r *MongoRepository) GetAll(ctx context.Context) ([]*Privilege, error) {
 
 // Delete - deletes a given privilege by id.
 func (r *MongoRepository) Delete(ctx context.Context, priv *Privilege) error {
-	if priv.Default {
-		return errors.New("Cannot delete root privilege")
+	if err := priv.validate("delete"); err != nil {
+		return err
 	}
 
 	_, err := r.mongo.DeleteOne(ctx, bson.M{"id": priv.ID})
