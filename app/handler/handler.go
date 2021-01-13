@@ -71,10 +71,10 @@ func (s *Handler) Get(ctx context.Context, req *privilegeProto.Privilege) (*priv
 		return &privilegeProto.Response{}, err
 	}
 
-	rep := &privilegeProto.Response{}
-	rep.Privilege = repository.UnmarshalPrivilege(privilege)
+	resp := &privilegeProto.Response{}
+	resp.Privilege = repository.UnmarshalPrivilege(privilege)
 
-	return &privilegeProto.Response{}, nil
+	return resp, nil
 }
 
 // GetRoot - gets a root privilege
@@ -85,10 +85,10 @@ func (s *Handler) GetRoot(ctx context.Context, req *privilegeProto.Request) (*pr
 		return &privilegeProto.Response{}, err
 	}
 
-	rep := &privilegeProto.Response{}
-	rep.Privilege = repository.UnmarshalPrivilege(privilege)
+	resp := &privilegeProto.Response{}
+	resp.Privilege = repository.UnmarshalPrivilege(privilege)
 
-	return &privilegeProto.Response{}, nil
+	return resp, nil
 }
 
 // GetDefault - gets a default privilege
@@ -99,10 +99,10 @@ func (s *Handler) GetDefault(ctx context.Context, req *privilegeProto.Request) (
 		return &privilegeProto.Response{}, err
 	}
 
-	rep := &privilegeProto.Response{}
-	rep.Privilege = repository.UnmarshalPrivilege(privilege)
+	resp := &privilegeProto.Response{}
+	resp.Privilege = repository.UnmarshalPrivilege(privilege)
 
-	return &privilegeProto.Response{}, nil
+	return resp, nil
 }
 
 // GetAll - get all privileges
@@ -113,10 +113,10 @@ func (s *Handler) GetAll(ctx context.Context, req *privilegeProto.Request) (*pri
 		return &privilegeProto.Response{}, err
 	}
 
-	rep := &privilegeProto.Response{}
-	rep.Privileges = repository.UnmarshalPrivlegeCollection(privileges)
+	resp := &privilegeProto.Response{}
+	resp.Privileges = repository.UnmarshalPrivlegeCollection(privileges)
 
-	return &privilegeProto.Response{}, nil
+	return resp, nil
 }
 
 // Delete - deltes a privilege
