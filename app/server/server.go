@@ -20,6 +20,7 @@ import (
 
 type collectionEnv struct {
 	privilegeCollection string
+	userCollection      string
 }
 
 // Init - initialize .env variables.
@@ -34,7 +35,11 @@ func loadCollections() (collectionEnv, error) {
 	if !ok {
 		return collectionEnv{}, errors.New("Required MONGO_DB_PRIVILEGE_COLLECTION")
 	}
-	return collectionEnv{privilegeCollection}, nil
+	userCollection, ok := os.LookupEnv("MONGO_DB_USER_COLLECTION")
+	if !ok {
+		return collectionEnv{}, errors.New("Required MONGO_DB_USER_COLLECTION")
+	}
+	return collectionEnv{privilegeCollection, userCollection}, nil
 }
 
 // Run - runs a go microservice. Uses zap for logging and a waitGroup for async testing.
@@ -63,9 +68,10 @@ func Run(zapLog *zap.Logger, wg *sync.WaitGroup) {
 	}
 
 	privilegeCollection := mongodb.Collection(collections.privilegeCollection)
+	usersCollection := mongodb.Collection(collections.userCollection)
 
 	// setup repository
-	repo := repository.NewRepository(privilegeCollection)
+	repo := repository.NewRepository(privilegeCollection, usersCollection)
 
 	if err := repo.CreateDefault(context.Background()); err != nil {
 		zapLog.Info(fmt.Sprintf("%v", err))

@@ -15,7 +15,7 @@ spec:
         spec:
           containers:
             - name: hqs-privilege-service
-              image: gcr.io/softcorp-hqs/hqs-privilege-service:v0.0.7
+              image: gcr.io/softcorp-hqs/hqs-privilege-service:v0.0.8
               imagePullPolicy: Always
               ports:
                 - containerPort: 9000
@@ -24,6 +24,8 @@ spec:
                 value: "hqs_user_test"
               - name: "MONGO_DB_PRIVILEGE_COLLECTION"
                 value: "privileges"
+              - name: "MONGO_DB_USER_COLLECTION"
+                value: "users"
               - name: "USER_SERVICE_IP"
                 value: "hqs-user-service.default.svc.cluster.local"
               - name: "USER_SERVICE_PORT"

@@ -44,12 +44,13 @@ type Repository interface {
 
 // MongoRepository - struct.
 type MongoRepository struct {
-	mongo *mongo.Collection
+	mongo     *mongo.Collection
+	mongoUser *mongo.Collection
 }
 
 // NewRepository - returns MongoRepository pointer.
-func NewRepository(mongo *mongo.Collection) *MongoRepository {
-	return &MongoRepository{mongo}
+func NewRepository(mongo *mongo.Collection, mongoUser *mongo.Collection) *MongoRepository {
+	return &MongoRepository{mongo, mongoUser}
 }
 
 // MarshalPrivilegeCollection - unmarshal collection from proto.privilege to privileges
@@ -341,9 +342,32 @@ func (r *MongoRepository) Delete(ctx context.Context, priv *Privilege) error {
 		return err
 	}
 
-	_, err := r.mongo.DeleteOne(ctx, bson.M{"id": priv.ID})
+	// set all users with that privilege to default privilege
+	defaultPrivilege, err := r.GetDefault(ctx)
 	if err != nil {
 		return err
 	}
+	updateUsers := bson.M{
+		"$set": bson.M{
+			"privilege_id": defaultPrivilege.ID,
+			"updated_at":   time.Now(),
+		},
+	}
+	_, err = r.mongo.UpdateMany(
+		ctx,
+		bson.M{"privilege_id": priv.ID},
+		updateUsers,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	// now delete
+	_, err = r.mongo.DeleteOne(ctx, bson.M{"id": priv.ID})
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
