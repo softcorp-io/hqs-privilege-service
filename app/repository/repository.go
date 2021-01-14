@@ -75,6 +75,8 @@ func MarshalPrivilege(priv *privilegeProto.Privilege) *Privilege {
 		DeleteUser:             priv.DeleteUser,
 		BlockUser:              priv.BlockUser,
 		SendResetPasswordEmail: priv.SendResetPasswordEmail,
+		Root:                   priv.Root,
+		Default:                priv.Default,
 		CreatedAt:              createdAt,
 		UpdatedAt:              updatedAt,
 	}
@@ -102,6 +104,8 @@ func UnmarshalPrivilege(priv *Privilege) *privilegeProto.Privilege {
 		DeleteUser:             priv.DeleteUser,
 		BlockUser:              priv.BlockUser,
 		SendResetPasswordEmail: priv.SendResetPasswordEmail,
+		Root:                   priv.Root,
+		Default:                priv.Default,
 		CreatedAt:              createdAt,
 		UpdatedAt:              updatedAt,
 	}

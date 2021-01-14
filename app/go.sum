@@ -122,6 +122,8 @@ github.com/softcorp-io/hqs_proto v0.0.40 h1:BKWEJPMq9SJtA+XGUy4GrDXnLe5wN8u8dnt4
 github.com/softcorp-io/hqs_proto v0.0.40/go.mod h1:Qu8eVzq7okeCaNnznjnSXvgOHajXU3h+RY4ETc6+ME8=
 github.com/softcorp-io/hqs_proto v0.0.41 h1:wEC44zc5FGnYFttW6IPj5ZfNouktbuBwRTEcZkqjD7I=
 github.com/softcorp-io/hqs_proto v0.0.41/go.mod h1:Qu8eVzq7okeCaNnznjnSXvgOHajXU3h+RY4ETc6+ME8=
+github.com/softcorp-io/hqs_proto v0.0.42 h1:STHyTnngHrWaHIezWL/UPuXccLLVBfix4fwS8dU9n/Y=
+github.com/softcorp-io/hqs_proto v0.0.42/go.mod h1:Qu8eVzq7okeCaNnznjnSXvgOHajXU3h+RY4ETc6+ME8=
 github.com/spf13/cobra v0.0.3/go.mod h1:1l0Ry5zgKvJasoi3XT1TypsSe7PqH0Sj9dhYf7v3XqQ=
 github.com/spf13/pflag v1.0.3/go.mod h1:DYY7MBk1bdzusC3SYhjObp+wFpr4gzcvqqNjLnInEg4=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
