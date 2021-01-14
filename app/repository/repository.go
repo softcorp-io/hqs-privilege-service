@@ -369,7 +369,7 @@ func (r *MongoRepository) Delete(ctx context.Context, priv *Privilege) error {
 			"updated_at":   time.Now(),
 		},
 	}
-	_, err = r.mongo.UpdateMany(
+	_, err = r.mongoUser.UpdateMany(
 		ctx,
 		bson.M{"privilege_id": priv.ID},
 		updateUsers,
