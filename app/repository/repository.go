@@ -121,7 +121,7 @@ func (p *Privilege) validate(action string) error {
 		blockNoViewAccess := p.BlockUser && !p.ViewAllUsers
 		sendResetEmailNoViewAccess := p.SendResetPasswordEmail && !p.ViewAllUsers
 		if createNoViewAccess {
-			return errors.New("Create access bot allowed without view access")
+			return errors.New("Create access not allowed without view access")
 		}
 		if deleteNoViewAccess {
 			return errors.New("Delete access not allowed without view access")
@@ -134,6 +134,12 @@ func (p *Privilege) validate(action string) error {
 		}
 		if sendResetEmailNoViewAccess {
 			return errors.New("Send reset email access not allowed without view access")
+		}
+		if p.Name == "" {
+			return errors.New("Name is required")
+		}
+		if p.ID == "" {
+			return errors.New("Name is required")
 		}
 	case "update":
 		if p.Default || p.Root {
@@ -158,6 +164,12 @@ func (p *Privilege) validate(action string) error {
 		}
 		if sendResetEmailNoViewAccess {
 			return errors.New("Send reset email access not allowed without view access")
+		}
+		if p.Name == "" {
+			return errors.New("Name is required")
+		}
+		if p.ID == "" {
+			return errors.New("Name is required")
 		}
 	case "delete":
 		if p.Default || p.Root {
