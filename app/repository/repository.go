@@ -139,7 +139,7 @@ func (p *Privilege) validate(action string) error {
 			return errors.New("Name is required")
 		}
 		if p.ID == "" {
-			return errors.New("Name is required")
+			return errors.New("ID is required")
 		}
 	case "update":
 		if p.Default || p.Root {
@@ -166,9 +166,6 @@ func (p *Privilege) validate(action string) error {
 			return errors.New("Send reset email access not allowed without view access")
 		}
 		if p.Name == "" {
-			return errors.New("Name is required")
-		}
-		if p.ID == "" {
 			return errors.New("Name is required")
 		}
 	case "delete":
